@@ -1,21 +1,25 @@
+// App.js
 import React, { useEffect, useState } from "react";
-import WebSocketService from "./WebSocketService";
+import {
+  connectWebSocket,
+  disconnectWebSocket,
+  subscribeWebSocket,
+  sendMessageWebSocket,
+} from "./useWebSocket";
+import { Button, Input } from "antd";
+import "./App.css";
 
 const App = () => {
   const [greeting, setGreeting] = useState("");
   const [inputMessage, setInputMessage] = useState("");
-  const authToken =
-    "eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiIzIiwicm9sZXMiOiJST0xFX1VTRVIiLCJzdWIiOiJHYXkgQXVuZyIsImV4cCI6MTcwMjU0NjI1Nn0.gbt7nIvNIO7I9Ryb-5fly4476VqTtQNtSWkh7zYzijXIqPnWaGRLTKfgwvqvNMaLKI75VBZ24u55CmjzLa4Kfg";
-  const webSocketService = WebSocketService(authToken);
 
   useEffect(() => {
     // Connect to WebSocket and wait for the connection to be established
-    webSocketService
-      .connect()
+    connectWebSocket()
       .then(() => {
-        // Subscribe to a specific destination (update with your backend destination)
-        webSocketService.subscribe("/topic/hello", (message) => {
-          setGreeting(message.text);
+        // Subscribe to a specific destination (update with backend destination)
+        subscribeWebSocket("/topic/hello", (message) => {
+          setGreeting(message.message);
         });
       })
       .catch((error) => {
@@ -24,27 +28,38 @@ const App = () => {
 
     // return () => {
     //   // Disconnect when the component is unmounted
-    //   webSocketService.disconnect();
+    //   disconnectWebSocket();
     // };
-  }, [webSocketService]);
+  }, []);
 
   const sendMessage = () => {
-    // Send a message to a specific destination (update with your backend destination)
-
-    webSocketService.sendMessage("/app/hello", inputMessage);
+    // Send a message to a specific destination (update with backend destination)
+    sendMessageWebSocket("/app/hello", inputMessage);
   };
 
   return (
     <div className="App">
       <h1>WebSocket with React</h1>
       <p>{greeting}</p>
-      <input
-        type="text"
-        id="send-text"
-        value={inputMessage}
-        onChange={(e) => setInputMessage(e.target.value)}
-      />
-      <button onClick={sendMessage}>Send Message</button>
+      <div>
+        <Input
+          id="send-text"
+          style={{
+            borderRadius: "1px",
+            border: "1px solid green",
+            width: "250px",
+            marginRight: "10px",
+          }}
+          value={inputMessage}
+          onChange={(e) => setInputMessage(e.target.value)}
+        />
+        <Button
+          style={{ borderRadius: "1px", background: "green", color: "white" }}
+          onClick={sendMessage}
+        >
+          Send Message
+        </Button>
+      </div>
     </div>
   );
 };
