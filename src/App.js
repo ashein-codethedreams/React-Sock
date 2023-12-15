@@ -35,6 +35,7 @@ const App = () => {
   const sendMessage = () => {
     // Send a message to a specific destination (update with backend destination)
     sendMessageWebSocket("/app/hello", inputMessage);
+    setInputMessage("");
   };
 
   return (
