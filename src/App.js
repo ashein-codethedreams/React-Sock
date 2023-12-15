@@ -10,8 +10,7 @@ import { Button, Input } from "antd";
 import "./App.css";
 
 const App = () => {
-  const [greeting, setGreeting] = useState("");
-  const [user, setUser] = useState("");
+  const [history, setHistory] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
 
   useEffect(() => {
@@ -20,8 +19,8 @@ const App = () => {
       .then(() => {
         // Subscribe to a specific destination (update with backend destination)
         subscribeWebSocket("/topic/hello", (message) => {
-          setGreeting(message.message);
-          setUser(message.sender);
+          console.log(message);
+          setHistory((prevHistory) => [...prevHistory, message]);
         });
       })
       .catch((error) => {
@@ -43,9 +42,6 @@ const App = () => {
   return (
     <div className="App">
       <h1>WebSocket with React</h1>
-      <p>
-        {user ? `${user} :` : ""} {greeting}
-      </p>
       <div>
         <Input
           id="send-text"
@@ -65,6 +61,11 @@ const App = () => {
           Send Message
         </Button>
       </div>
+      {history.map((message, index) => (
+        <p key={index}>
+          {message.sender ? `${message.sender} :` : ""} {message.message}
+        </p>
+      ))}
     </div>
   );
 };
