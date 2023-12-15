@@ -11,6 +11,7 @@ import "./App.css";
 
 const App = () => {
   const [greeting, setGreeting] = useState("");
+  const [user, setUser] = useState("");
   const [inputMessage, setInputMessage] = useState("");
 
   useEffect(() => {
@@ -20,6 +21,7 @@ const App = () => {
         // Subscribe to a specific destination (update with backend destination)
         subscribeWebSocket("/topic/hello", (message) => {
           setGreeting(message.message);
+          setUser(message.sender);
         });
       })
       .catch((error) => {
@@ -41,7 +43,9 @@ const App = () => {
   return (
     <div className="App">
       <h1>WebSocket with React</h1>
-      <p>{greeting}</p>
+      <p>
+        {user ? `${user} :` : ""} {greeting}
+      </p>
       <div>
         <Input
           id="send-text"
